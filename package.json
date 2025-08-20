@@ -1,0 +1,32 @@
+{
+  "name": "home-security-camera-system",
+  "version": "1.0.0",
+  "description": "Sistem keamanan rumah untuk monitoring kamera jarak jauh dengan integrasi WhatsApp",
+  "main": "server-whatsapp.js",
+  "scripts": {
+    "start": "node server-whatsapp.js",
+    "dev": "nodemon server-whatsapp.js",
+    "mobile": "node server-mobile.js",
+    "whatsapp": "node server-whatsapp.js"
+  },
+  "keywords": [
+    "security",
+    "camera",
+    "monitoring",
+    "home",
+    "surveillance",
+    "whatsapp",
+    "mobile"
+  ],
+  "author": "Home Security System",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

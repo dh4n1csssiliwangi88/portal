@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem pengintai - Monitoring Kamera</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🎥 Sistem pengintai</h1>
+            <p>kamera pengawas</p>
+        </header>
+
+        <div class="auth-section" id="loginSection">
+            <h2>Masuk ke Sistem</h2>
+            <form id="loginForm">
+                <input type="password" id="password" placeholder="Masukkan kata sandi" required>
+                <button type="submit">Masuk</button>
+            </form>
+        </div>
+
+        <div class="dashboard" id="dashboard">
+            <!-- Mode Selection -->
+            <div class="mode-selector">
+                <button class="mode-btn active" onclick="setMode('local')">📹 Mode Lokal</button>
+                <button class="mode-btn" onclick="setMode('mobile')">📱 Mode Mobile</button>
+                <button class="mode-btn" onclick="setMode('remote')">💻 Mode Remote</button>
+            </div>
+
+            <!-- Local Mode -->
+            <div id="localMode" class="mode-content active">
+                <div class="controls">
+                    <button onclick="toggleRecording()">🔴 Mulai Rekaman</button>
+                    <button onclick="captureScreenshot()">📸 Screenshot</button>
+                    <button onclick="toggleFullscreen()">⛶ Layar Penuh</button>
+                </div>
+
+                <div class="camera-grid">
+                    <div class="camera-feed">
+                        <h3>Kamera Depan</h3>
+                        <video id="camera1" autoplay muted></video>
+                        <div class="camera-controls">
+                            <button onclick="startCamera('camera1')">▶️ Mulai</button>
+                            <button onclick="stopCamera('camera1')">⏹️ Stop</button>
+                        </div>
+                    </div>
+
+                    <div class="camera-feed">
+                        <h3>Kamera Belakang</h3>
+                        <video id="camera2" autoplay muted></video>
+                        <div class="camera-controls">
+                            <button onclick="startCamera('camera2')">▶️ Mulai</button>
+                            <button onclick="stopCamera('camera2')">⏹️ Stop</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Mode -->
+            <div id="mobileMode" class="mode-content">
+                <div class="mobile-controls">
+                    <h3>📱 Kamera Ponsel</h3>
+                    <div class="mobile-camera-selector">
+                        <button onclick="listMobileCameras()">📱 Daftar Kamera</button>
+                        <select id="mobileCameraSelect" onchange="switchMobileCamera(this.value)"
+                            aria-label="Pilih kamera ponsel">
+                            <option value="">Pilih Kamera...</option>
+                        </select>
+                    </div>
+
+                    <div class="mobile-preview">
+                        <video id="mobileCamera" autoplay muted></video>
+                    </div>
+
+                    <div class="mobile-actions">
+                        <button onclick="toggleCameraFacing()" class="mobile-btn">🔄 Ganti Kamera</button>
+                        <button onclick="startMobileCamera()" class="mobile-btn">▶️ Mulai</button>
+                        <button onclick="stopMobileCamera()" class="mobile-btn">⏹️ Stop</button>
+                        <button onclick="shareMobileStream()" class="mobile-btn">🔗 Bagikan ke Laptop</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Remote Mode -->
+            <div id="remoteMode" class="mode-content">
+                <div class="remote-controls">
+                    <h3>💻 Monitor Remote</h3>
+
+                    <div class="connection-panel">
+                        <div class="connection-option">
+                            <h4>Mode: Server (Laptop)</h4>
+                            <button onclick="startRemoteServer()" class="remote-btn">🖥️ Jadi Server</button>
+                            <div id="serverInfo" class="connection-info">
+                                <p>ID Server: <span id="serverId">-</span></p>
+                                <div id="serverQrCode"></div>
+                            </div>
+                        </div>
+
+                        <div class="connection-option">
+                            <h4>Mode: Client (Mobile)</h4>
+                            <input type="text" id="serverIdInput" placeholder="Masukkan ID Server">
+                            <button onclick="connectToRemote()" class="remote-btn">🔗 Hubungkan</button>
+                        </div>
+                    </div>
+
+                    <div class="remote-view">
+                        <video id="remoteVideo" autoplay muted></video>
+                        <div id="connectionStatus">Menunggu koneksi...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status">
+                <p>Status: <span id="status">Tidak terhubung</span></p>
+                <p>Rekaman: <span id="recordingStatus">Berhenti</span></p>
+                <p>Mode: <span id="currentMode">Lokal</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

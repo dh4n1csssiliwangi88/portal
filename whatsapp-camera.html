@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📱 Kamera WhatsApp - Security System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .whatsapp-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #25D366;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #25D366;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #128C7E;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .camera-preview {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .camera-preview video {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .status {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .camera-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .camera-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 50px;
+            background: #25D366;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .camera-btn:hover {
+            background: #128C7E;
+            transform: scale(1.05);
+        }
+
+        .qr-section {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .qr-code {
+            display: inline-block;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #25D366;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="whatsapp-container">
+        <div class="header">
+            <h1>📱 Kamera WhatsApp</h1>
+            <p>Akses kamera keamanan Anda melalui WhatsApp</p>
+        </div>
+
+        <div class="content">
+            <!-- Login Section -->
+            <div id="loginSection">
+                <div class="form-group">
+                    <label for="phoneNumber">Nomor WhatsApp</label>
+                    <input type="tel" id="phoneNumber" placeholder="Contoh: 6281234567890" required>
+                </div>
+                <button class="btn btn-primary" onclick="requestCode()">Kirim Kode Verifikasi</button>
+            </div>
+
+            <!-- Verification Section -->
+            <div id="verifySection" class="hidden">
+                <div class="form-group">
+                    <label for="verificationCode">Kode Verifikasi</label>
+                    <input type="text" id="verificationCode" placeholder="Masukkan 6 digit kode" maxlength="6" required>
+                </div>
+                <button class="btn btn-primary" onclick="verifyCode()">Verifikasi</button>
+                <button class="btn btn-secondary" onclick="backToLogin()">Kembali</button>
+            </div>
+
+            <!-- Camera Section -->
+            <div id="cameraSection" class="hidden">
+                <div class="form-group">
+                    <label for="cameraSelect">Pilih Kamera</label>
+                    <select id="cameraSelect">
+                        <option value="">Memuat kamera...</option>
+                    </select>
+                </div>
+
+                <div class="camera-preview">
+                    <video id="cameraVideo" autoplay muted playsinline></video>
+                </div>
+
+                <div class="camera-controls">
+                    <button class="camera-btn" onclick="startCamera()">▶️ Mulai</button>
+                    <button class="camera-btn" onclick="stopCamera()">⏹️ Stop</button>
+                    <button class="camera-btn" onclick="switchCamera()">🔄 Ganti</button>
+                    <button class="camera-btn" onclick="shareCamera()">🔗 Bagikan</button>
+                </div>
+            </div>
+
+            <!-- Status Messages -->
+            <div id="statusMessage" class="status hidden"></div>
+
+            <!-- Loading -->
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Memproses...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStream = null;
+        let currentSession = null;
+        let currentPhoneNumber = null;
+
+        // API Functions
+        async function apiRequest(endpoint, data) {
+            const response = await fetch(`/api/whatsapp/${endpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            return response.json();
+        }
+
+        // Show/Hide Sections
+        function showSection(sectionId) {
+            document.querySelectorAll('.content > div').forEach(div => {
+                if (div.id !== 'statusMessage' && div.id !== 'loading') {
+                    div.classList.add('hidden');
+                }
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+        }
+
+        // Show Status
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+            statusEl.classList.remove('hidden');
+            setTimeout(() => statusEl.classList.add('hidden'), 5000);
+        }
+
+        // Show Loading
+        function showLoading(show = true) {
+            document.getElementById('loading').classList.toggle('hidden', !show);
+        }
+
+        // Request Verification Code
+        async function requestCode() {
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            if (!phoneNumber) {
+                showStatus('Masukkan nomor WhatsApp Anda', 'error');
+                return;
+            }
+
+            showLoading(true);
+            try {
+                const result = await apiRequest('request-code', { phoneNumber });
+                if (result.success) {
+                    currentPhoneNumber = result.phoneNumber;
+                    showSection('verifySection');
+                    showStatus('Kode verifikasi telah dikirim via WhatsApp', 'success');
+                } else {
+                    showStatus(result.error || 'Gagal mengirim kode', 'error');
+                }
+            } catch (error) {
+                showStatus('Terjadi kesalahan. Coba lagi.', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Verify Code
+        async function verifyCode() {
+            const code = document.getElementById('verificationCode').value.trim();
+            if (!code) {
+                showStatus('Masukkan kode verifikasi', 'error');
+                return;
+            }
+
+            showLoading(true);
+            try {
+                const result = await apiRequest('verify-code', {
+                    phoneNumber: currentPhoneNumber,
+                    code
+                });
+                if (result.success) {
+                    currentSession = result.sessionId;
+                    showSection('cameraSection');
+                    loadCameras();
+                    showStatus('Verifikasi berhasil!', 'success');
+                } else {
+                    showStatus(result.error || 'Kode salah', 'error');
+                }
+            } catch (error) {
+                showStatus('Terjadi kesalahan. Coba lagi.', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Back to Login
+        function backToLogin() {
+            showSection('loginSection');
+            document.getElementById('verificationCode').value = '';
+        }
+
+        // Load Available Cameras
+        async function loadCameras() {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+
+                const select = document.getElementById('cameraSelect');
+                select.innerHTML = '<option value="">Pilih kamera...</option>';
+
+                videoDevices.forEach((device, index) => {
+                    const option = document.createElement('option');
+                    option.value = device.deviceId;
+                    option.textContent = device.label || `Kamera ${index + 1}`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                showStatus('Gagal memuat kamera', 'error');
+            }
+        }
+
+        // Start Camera
+        async function startCamera() {
+            const deviceId = document.getElementById('cameraSelect').value;
+            if (!deviceId) {
+                showStatus('Pilih kamera terlebih dahulu', 'error');
+                return;
+            }
+
+            try {
+                const constraints = {
+                    video: {
+                        deviceId: { exact: deviceId },
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                };
+
+                currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+                const video = document.getElementById('cameraVideo');
+                video.srcObject = currentStream;
+                showStatus('Kamera aktif', 'success');
+            } catch (error) {
+                showStatus('Gagal mengaktifkan kamera', 'error');
+            }
+        }
+
+        // Stop Camera
+        function stopCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+                document.getElementById('cameraVideo').srcObject = null;
+                showStatus('Kamera dihentikan', 'info');
+            }
+        }
+
+        // Switch Camera
+        async function switchCamera() {
+            const select = document.getElementById('cameraSelect');
+            const currentIndex = select.selectedIndex;
+            const nextIndex = (currentIndex + 1) % select.options.length;
+            if (nextIndex > 0) {
+                select.selectedIndex = nextIndex;
+                if (currentStream) {
+                    stopCamera();
+                    await startCamera();
+                }
+            }
+        }
+
+        // Share Camera
+        async function shareCamera() {
+            if (!currentSession) {
+                showStatus('Sesi tidak valid', 'error');
+                return;
+            }
+
+            try {
+                const result = await apiRequest('share-camera', {
+                    sessionId: currentSession,
+                    cameraName: 'Kamera WhatsApp'
+                });
+
+                if (result.success) {
+                    const shareUrl = `${window.location.origin}/whatsapp-camera/${result.accessToken}`;
+
+                    // Copy to clipboard
+                    navigator.clipboard.writeText(shareUrl).then(() => {
+                        showStatus('Link berhasil disalin ke clipboard', 'success');
+                    });
+
+                    // Also send via WhatsApp
+                    const whatsappUrl = `https://wa.me/${currentPhoneNumber}?text=${encodeURIComponent(
+                        `🔗 Link Akses Kamera Anda: ${shareUrl}\n\nLink ini berlaku selama 24 jam.`
+                    )}`;
+
+                    window.open(whatsappUrl, '_blank');
+                }
+            } catch (error) {
+                showStatus('Gagal membagikan kamera', 'error');
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if already authenticated
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            if (token) {
+                // Handle direct camera access
+                showSection('cameraSection');
+                loadCameras();
+            }
+        });
+    </script>
+</body>
+
+</html>
